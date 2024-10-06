@@ -29,7 +29,7 @@ jobs:
 
       - uses: ./.github/actions/post_sticky_comment
         with:
-          title: Windows Qt6
+          marker: Windows Qt6
           body: Windows Qt6 has finished ${{ github.event.pull_request.head.sha }}
           pr: ${{ github.event.number }}
           data: |
