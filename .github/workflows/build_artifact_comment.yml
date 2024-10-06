@@ -95,7 +95,7 @@ jobs:
             const comment = prComments.data?.find(c => c.body.startsWith(PREFIX));
             if (!!comment) {
               console.log(comment);
-              newPrComment = PREFIX + "\n\n" + updateCommentSection(comment, title, body)
+              newPrComment = PREFIX + "\n\n" + updateCommentSection(comment.body, title, body)
 
               // update the existing comment
               await github.rest.issues.updateComment({
