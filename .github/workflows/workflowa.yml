@@ -27,10 +27,16 @@ jobs:
         with:
           fetch-depth: 2
 
+      - name: 📤 Upload data
+        uses: actions/upload-artifact@v4
+        id: artifact-win64
+        with:
+          name: comment_artifacts
+          path: |
+            build/x-win64.zip
+
       - uses: ./.github/actions/post_sticky_comment
         with:
           title: Workflow A
-          body: Workflow A has finished ${{ github.event.pull_request.head.sha }}
+          body: Workflow A has finished ${{ github.event.pull_request.head.sha }}. Download data [here](${{ steps.artifact-win64.outputs.artifact-id }})
           pr: ${{ github.event.number }}
-          data: |
-            build/x-win64.zip

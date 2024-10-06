@@ -13,10 +13,6 @@ inputs:
     description: Pull Request Number
     required: true
     type: string
-  data:
-    description: Data
-    required: false
-    type: string
 
 runs:
   using: composite
@@ -54,4 +50,3 @@ runs:
         name: comment_artifacts
         path: |
           comment.json
-          ${{ inputs.data }}
