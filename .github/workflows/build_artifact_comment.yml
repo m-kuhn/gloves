@@ -64,15 +64,15 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            function updateCommentSection(prComments, title, body) {
+            function updateCommentSection(prComment, title, body) {
               const sectionRegex = new RegExp(`(## ${title}\\n)([^##]*)`, 'm');
               
               // Check if the section with the title exists
-              if (sectionRegex.test(prComments)) {
-                return prComments.replace(sectionRegex, `$1${body}\n`);
+              if (sectionRegex.test(prComment)) {
+                return prComment.replace(sectionRegex, `$1${body}\n`);
               } else {
                 // If the section doesn't exist, append the new section to the end
-                return prComments.trim() + `\n\n## ${title}\n${body}\n`;
+                return prComment.trim() + `\n\n## ${title}\n${body}\n`;
               }
             }
 
@@ -90,27 +90,27 @@ jobs:
               issue_number: prNumber,
             });
 
-            console.log(prComments);
-
             const PREFIX = "# Build result";
-
-            newPrComments = PREFIX + "\n\n" + updateCommentSection(prComments, title, body)
 
             const comment = prComments.data?.find(c => c.body.startsWith(PREFIX));
             if (!!comment) {
+              newPrComment = PREFIX + "\n\n" + updateCommentSection(comment, title, body)
+
               // update the existing comment
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 comment_id: comment.id,
-                body: newPrComments
+                body: newPrComment
               });
             } else {
               // submit a new comment
+              newPrComment = PREFIX + "\n\n" + updateCommentSection("", title, body)
+
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue_number,
-                body: newPrComments
+                body: newPrComment
               });
             }
