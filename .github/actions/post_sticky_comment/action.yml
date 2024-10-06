@@ -39,6 +39,7 @@ runs:
               body: body,
               pr_number: pr
             }, null, 2);
+            console.log(content)
           
             fs.writeFileSync('comment.json', content);
           
