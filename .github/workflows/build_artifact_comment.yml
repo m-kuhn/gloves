@@ -110,7 +110,7 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: issue_number,
+                issue_number: prNumber,
                 body: newPrComment
               });
             }
