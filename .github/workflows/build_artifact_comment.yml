@@ -82,13 +82,15 @@ jobs:
             const title = data.title;
             const body = data.body;
             const prNumber = data.pr_number;
-            console.log(data)
+            console.debug(data)
 
             const prComments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
             });
+
+            console.log(prComments);
 
             const PREFIX = "# Build result";
 
