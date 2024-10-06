@@ -47,6 +47,6 @@ runs:
     - name: 📤 Upload data
       uses: actions/upload-artifact@v4
       with:
-        name: comment_artifacts
+        name: comment_artifacts-${{ github.job }}
         path: |
           comment-${{ github.job }}.json
