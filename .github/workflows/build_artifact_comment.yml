@@ -52,24 +52,11 @@ jobs:
             {
               core.setOutput('artifact_id', 0);
             }
-            // let matchArtifactsDebugSymbols = allArtifacts.data.artifacts.filter((artifact) => {
-            //   return artifact.name == "QGIS for Windows 64bit Debug Symbols"
-            // });
-            // if (matchArtifactsDebugSymbols.length>0)
-            // {
-            //   core.setOutput('debug_symbols_artifact_id', matchArtifactsDebugSymbols[0].id);
-            // }
-            // else
-            // {
-            //   core.setOutput('debug_symbols_artifact_id', 0);
-            // }
 
       - name: 'Unzip artifact'
         if: fromJSON(steps.download_artifact.outputs.artifact_id) > 0
         run: |
           unzip data.zip
-          unzip -j x-win64.zip pr_number git_commit
-
 
       - name: 'Post artifact download link as comment on PR'
         if: fromJSON(steps.download_artifact.outputs.artifact_id) > 0
@@ -77,31 +64,43 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            function updateCommentSection(prComments, title, body) {
+              const sectionRegex = new RegExp(`(## ${title}\\n)([^##]*)`, 'm');
+              
+              // Check if the section with the title exists
+              if (sectionRegex.test(prComments)) {
+                return prComments.replace(sectionRegex, `$1${body}\n`);
+              } else {
+                // If the section doesn't exist, append the new section to the end
+                return prComments.trim() + `\n\n## ${title}\n${body}\n`;
+              }
+            }
+
             const fs = require('fs');
-            const issue_number = Number(fs.readFileSync('./pr_number'));
-            const git_sha = String(fs.readFileSync('./git_commit')).trim();
+            const data = JSON.parse(fs.readFileSync('comment.json', 'utf8'));
+
+            const title = data.title;
+            const body = data.body;
+            const prNumber = data.pr_number;
+
             const prComments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: issue_number,
+              issue_number: prNumber,
             });
-            const PREFIX = "## 🪟 Windows builds ready!";
-            let body = PREFIX + "\n\n" +
-                "Windows builds of this PR are available for testing [here](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/suites/" +  context.payload.workflow_run.check_suite_id + "/artifacts/${{steps.download_artifact.outputs.artifact_id}}).";
-            // if ( ${{steps.download_artifact.outputs.debug_symbols_artifact_id}} > 0 )
-            // {
-            //   body += " Debug symbols for this build are available [here](https://github.com/" + context.repo.owner + "/" + context.repo.repo + "/suites/" +  context.payload.workflow_run.check_suite_id + "/artifacts/${{steps.download_artifact.outputs.debug_symbols_artifact_id}}).";
-            // }
-            body += "\n\n*(Built from commit " + git_sha + ")*";
 
-            const winBuildComment = prComments.data?.find(c => c.body.startsWith(PREFIX));
-            if (!!winBuildComment) {
+            const PREFIX = "# Build result";
+
+            newPrComments = PREFIX + "\n\n" + updateCommentSection(prComments, title, body)
+
+            const comment = prComments.data?.find(c => c.body.startsWith(PREFIX));
+            if (!!comment) {
               // update the existing comment
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                comment_id: winBuildComment.id,
-                body: body
+                comment_id: comment.id,
+                body: newPrComments
               });
             } else {
               // submit a new comment
@@ -109,6 +108,6 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issue_number,
-                body: body
+                body: newPrComments
               });
             }
