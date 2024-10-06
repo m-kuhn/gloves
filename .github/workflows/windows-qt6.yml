@@ -27,18 +27,10 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: 🔩 Save PR number to zip
-        run: |
-          echo ${{ github.event.number }} | tee pr_number
-          powershell Compress-Archive -update pr_number build/x-win64.zip
-          echo ${{ github.event.pull_request.head.sha }} | tee git_commit
-          powershell Compress-Archive -update git_commit build/x-win64.zip
-          echo "Qt6 builds" | tee title
-          powershell Compress-Archive -update title build/x-win64.zip
-
-      - name: 📤 Upload bundle
-        uses: actions/upload-artifact@v4
+      - uses: ./.github/actions/post_sticky_comment
         with:
-          name: comment_artifacts
-          path: |
+          title: Windows Qt6
+          body: Windows Qt6 has finished ${{ github.event.pull_request.head.sha }}
+          pr: ${{ github.event.number }}
+          data: |
             build/x-win64.zip
