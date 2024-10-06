@@ -110,6 +110,12 @@ jobs:
             const comment = prComments.data?.find(c => c.body.startsWith(PREFIX));
 
             let newPrComment;
+            if (!!comment) {
+                newPrComment = comment.body;
+            } else {
+                newPrComment = PREFIX + "\n\n";
+            }
+
 
             // Loop through all the comment*.json files
             for (const file of files) {
@@ -120,13 +126,7 @@ jobs:
                     const body = data.body;
                     console.debug(data);
 
-                    // Update the PR comment with the section for the current title and body
-                    if (!!comment) {
-                      newPrComment = updateCommentSection(comment.body, title, body);
-                    } else {
-                      // If no existing comment, create a new one with the current title and body
-                      newPrComment = PREFIX + "\n\n" + updateCommentSection("", title, body);
-                    }
+                    newPrComment = updateCommentSection(newPrComment, title, body);
                 } catch (error) {
                     console.error(`Failed to process file ${file}: ${error.message}`);
                 }
