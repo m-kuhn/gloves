@@ -34,7 +34,7 @@ jobs:
             });
             console.log(allArtifacts.data.artifacts[0]);
             let matchArtifacts = allArtifacts.data.artifacts.filter((artifact) => {
-              return artifact.name == "QGIS Windows Builds"
+              return artifact.name == "comment_artifacts"
             });
             if (matchArtifacts.length > 0)
             {
