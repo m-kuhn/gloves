@@ -82,6 +82,7 @@ jobs:
             const title = data.title;
             const body = data.body;
             const prNumber = data.pr_number;
+            console.log(data)
 
             const prComments = await github.rest.issues.listComments({
               owner: context.repo.owner,
