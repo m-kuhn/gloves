@@ -29,9 +29,9 @@ runs:
           
           try {
             // Get inputs from the GitHub Action
-            const title = core.getInput('title');
-            const body = core.getInput('body');
-            const pr = core.getInput('pr');
+            const title = JSON.parse(`"${{ inputs.title }}"`);  // Safely parsing as a string
+            const body = JSON.parse(`"${{ inputs.body }}"`);    // Safely parsing as a string
+            const pr = ${{ inputs.pr }};
 
             // Create the content of the JSON file
             const content = JSON.stringify({
@@ -47,7 +47,6 @@ runs:
           } catch (error) {
             core.setFailed(`Action failed with error: ${error}`);
           }
-
 
     - name: 📤 Upload data
       uses: actions/upload-artifact@v4
