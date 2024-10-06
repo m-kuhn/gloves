@@ -25,8 +25,13 @@ runs:
           
           try {
             // Get inputs from the GitHub Action
-            const marker = JSON.parse(`"${{ inputs.marker }}"`);  // Safely parsing as a string
-            const body = JSON.parse(`"${{ inputs.body }}"`);    // Safely parsing as a string
+            const marker = "${{ inputs.marker }}";
+            // Use this horrible hack found on stackoverflow to read a multiline input https://stackoverflow.com/a/15558082/2319028
+            const body = = function(){/*
+                ${{ inputs.body }}
+            */}.toString().slice(14,-3)
+            
+            JSON.parse(`""`);
             const pr = ${{ inputs.pr }};
 
             // Create the content of the JSON file
