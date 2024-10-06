@@ -38,5 +38,5 @@ jobs:
       - uses: ./.github/actions/post_sticky_comment
         with:
           title: Workflow A
-          body: Workflow A has finished ${{ github.event.pull_request.head.sha }}. Download data [here](${{ steps.artifact-win64.outputs.artifact-id }})
+          body: Workflow A has finished ${{ github.event.pull_request.head.sha }}. Download data [here](${{ steps.artifact-win64.outputs.artifact-url }})
           pr: ${{ github.event.number }}
