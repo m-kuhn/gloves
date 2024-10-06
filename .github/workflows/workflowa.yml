@@ -1,0 +1,44 @@
+---
+name: 🪟 Workflow A
+on:
+  push:
+    branches:
+      - main
+      - release-**
+  pull_request:
+  release:
+    types: ['published']
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  packages: write
+
+jobs:
+  build:
+    name: build (windows)
+    runs-on: windows-2022
+
+    steps:
+      - name: 🐣 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: 🔩 Save PR number to zip
+        run: |
+          echo ${{ github.event.number }} | tee pr_number
+          powershell Compress-Archive -update pr_number build/x-win64.zip
+          echo ${{ github.event.pull_request.head.sha }} | tee git_commit
+          powershell Compress-Archive -update git_commit build/x-win64.zip
+          echo "Qt6 builds" | tee title
+          powershell Compress-Archive -update title build/x-win64.zip
+
+      - name: 📤 Upload bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: QGIS Windows Builds
+          path: |
+            build/x-win64.zip
