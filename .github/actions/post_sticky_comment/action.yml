@@ -37,7 +37,7 @@ runs:
             }, null, 2);
             console.debug(content)
           
-            fs.writeFileSync('comment-${{ github.run_id }}.json', content);
+            fs.writeFileSync('comment-${{ github.job }}.json', content);
           
             console.log('comment.json file has been written successfully.');
           } catch (error) {
@@ -49,4 +49,4 @@ runs:
       with:
         name: comment_artifacts
         path: |
-          comment-${{ github.run_id }}.json
+          comment-${{ github.job }}.json
