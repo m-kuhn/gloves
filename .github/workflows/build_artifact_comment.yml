@@ -3,13 +3,16 @@ name: Write build artifact comments
 on:
   workflow_run:
     workflows: 
-      - 🪟 MingW64 Windows 64bit Build
+      - 🪟 Workflow A
       - 🪟 Windows Qt6
     types:
       - completed
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
   on-success:
@@ -33,7 +36,7 @@ jobs:
             let matchArtifacts = allArtifacts.data.artifacts.filter((artifact) => {
               return artifact.name == "QGIS Windows Builds"
             });
-            if (matchArtifacts.length>0)
+            if (matchArtifacts.length > 0)
             {
               let download = await github.rest.actions.downloadArtifact({
                  owner: context.repo.owner,
